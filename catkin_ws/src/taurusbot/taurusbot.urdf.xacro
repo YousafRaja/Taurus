@@ -1,0 +1,354 @@
+<?xml version="1.0"?>
+<robot name="taurusbot"
+xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<!-- #################### versions without origin #################### -->
+
+ <xacro:macro name="box_inertial" params="x y z mass">
+    <inertial>
+      <mass value="${mass}" />
+      <origin xyz="0 0 0" />
+      <inertia ixx="${0.0833333 * mass * (y*y + z*z)}" ixy="0.0" ixz="0.0"
+        iyy="${0.0833333 * mass * (x*x + z*z)}" iyz="0.0"
+        izz="${0.0833333 * mass * (x*x + y*y)}" />
+    </inertial>
+  </xacro:macro>
+  
+    <xacro:macro name="cylinder_inertial" params="radius length mass">
+    <inertial>
+      <mass value="${mass}" />
+      <origin xyz="0 0 0" />
+      <inertia ixx="${0.0833333 * mass * (3 * radius * radius + length * length)}" ixy="0.0" ixz="0.0"
+        iyy="${0.0833333 * mass * (3 * radius * radius + length * length)}" iyz="0.0"
+        izz="${0.5 * mass * radius * radius}" />
+    </inertial>
+  </xacro:macro>
+
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="0.8255 0.6223 0.2159"/>
+      </geometry>
+      <material name="silver">
+        <color rgba="0.75 0.75 0.75 1"/>
+      </material>
+    </visual>
+    <collision>
+     <geometry>
+      <box size="0.8255 0.6223 0.2159"/>
+     </geometry>
+    </collision>
+
+	<xacro:box_inertial mass="200.0" x="0.8255" y="0.6223" z="0.2159"/>
+
+  </link>
+
+    <joint name="base_to_motor_joint" type="fixed">
+    <axis xyz="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="motor"/>
+    <origin rpy="0 0 0" xyz="0.0762 0 -0.1143"/>
+    </joint>
+
+    <link name="motor">
+    <visual>
+            <geometry>
+                <box size="0.1524 0.6096 0.1397"/>
+            </geometry>
+                  <material name="silver">
+                    <color rgba="0.75 0.75 0.75 1"/>
+                   </material>
+        </visual>
+        
+        <collision>
+     <geometry>
+      <box size="0.1524 0.6096 0.1397"/>
+     </geometry>
+    </collision>
+
+	<xacro:box_inertial mass="300.0" x="0.1524" y="0.6086" z="0.1397"/>
+        
+    </link>
+
+    <joint name="left_wheel_joint" type="continuous">
+        <axis xyz="0 0 1"/>
+           <parent link="motor"/>
+        <child link="motor_left_wheel"/>
+        <origin rpy="-1.5708 0 0" xyz="0 0.3048 0"/>
+        </joint>
+
+    <joint name="right_wheel_joint" type="continuous">
+        <axis xyz="0 0 1"/>
+           <parent link="motor"/>
+        <child link="motor_right_wheel"/>
+        <origin rpy="-1.5708 0 0" xyz="0 -0.3048 0"/>
+        </joint>
+
+  <link name="motor_right_wheel">
+    <visual>
+      <geometry>
+        <cylinder length="0.0889" radius="0.127"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0 0 0 1"/>
+      </material>
+    </visual>
+    
+    <collision>
+     <geometry>
+        <cylinder length="0.0889" radius="0.127"/>
+      </geometry>
+    </collision>
+    
+	<xacro:cylinder_inertial radius="0.127" length="0.0889" mass="80.0"/>
+	
+  </link>
+
+  <link name="motor_left_wheel">
+    <visual>
+      <geometry>
+        <cylinder length="0.0889" radius="0.127"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0 0 0 1"/>
+      </material>
+    </visual>
+    
+    
+        <collision>
+     <geometry>
+        <cylinder length="0.0889" radius="0.127"/>
+      </geometry>
+    </collision>        
+	
+	<xacro:cylinder_inertial radius="0.127" length="0.0889" mass="80.0"/>
+    
+  </link>
+
+    <joint name="base_to_rearplatform" type="fixed">
+    <axis xyz="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="rearplatform"/>
+    <origin rpy="0 0 0" xyz="-0.53975 0 -0.12065"/>
+    </joint>
+
+
+    <link name="rearplatform">
+    <visual>
+            <geometry>
+                <box size="0.254 0.4445 0.0254"/>
+            </geometry>
+                  <material name="silver">
+                    <color rgba="0.75 0.75 0.75 1"/>
+                   </material>
+        </visual>
+        
+                <collision>
+     <geometry>
+                <box size="0.254 0.4445 0.0254"/>
+      </geometry>
+    </collision>
+     
+	<xacro:box_inertial mass="10.0" x="0.254" y="0.4445" z="0.0254"/>
+        
+    </link>
+
+
+    <joint name="rearplatform_to_rlwCaster" type="fixed">
+    <axis xyz="0 0 0"/>
+    <parent link="rearplatform"/>
+    <child link="rlwCaster"/>
+    <origin rpy="0 0 0" xyz="0 0.20955 -0.0254"/>
+    </joint>
+
+
+    
+            <link name="rlwCaster">
+    <visual>
+            <geometry>
+                <box size="0.0254 0.0254 0.0508"/>
+            </geometry>
+                  <material name="silver">
+                    <color rgba="0.75 0.75 0.75 1"/>
+                   </material>
+        </visual>
+        
+                        <collision>
+     <geometry>
+                <box size="0.0254 0.0254 0.0508"/>
+      </geometry>
+    </collision>
+        
+    <xacro:box_inertial mass="7.0" x="0.0254" y="0.0254" z="0.0508"/>    
+    </link>
+
+   <joint name="rlwCaster to rlwJointCaster" type="continuous">
+    <axis xyz="0 0 1"/>
+    <parent link="rlwCaster"/>
+    <child link="rlwJointCaster"/>
+    <origin rpy="0 0 0" xyz="0 0.0 -0.0254"/>
+    </joint>    
+
+
+ <link name="rlwJointCaster">
+    <visual>
+      <geometry>
+        <cylinder length="0.03" radius="0.015"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0 0 0 1"/>
+      </material>
+    </visual>    
+    
+        <collision>
+     <geometry>
+        <cylinder length="0.03" radius="0.015"/>
+     </geometry>
+    </collision>
+	
+	<xacro:cylinder_inertial radius="0.015" length="0.03" mass="8.0"/>
+    
+  </link>
+
+
+    
+    <joint name="rlwJointCaster to rlw" type="continuous">
+    <axis xyz="0 0 1"/>
+    <parent link="rlwJointCaster"/>
+    <child link="rlw"/>
+    <origin rpy="-1.5708 0 0" xyz="0 0.0 -0.0254"/>
+    </joint>
+
+
+      <link name="rlw">
+    <visual>
+      <geometry>
+        <cylinder length="0.05" radius="0.035"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0 0 0 1"/>
+      </material>
+    </visual>    
+    
+        <collision>
+     <geometry>
+        <cylinder length="0.05" radius="0.035"/>
+     </geometry>
+    </collision>
+	
+	     	   	<xacro:cylinder_inertial radius="0.035" length="0.05" mass="16.0"/>  
+  </link>
+    
+
+
+    
+    
+        <joint name="rearplatform_to_rrwCaster" type="fixed">
+    <axis xyz="0 0 0"/>
+    <parent link="rearplatform"/>
+    <child link="rrwCaster"/>
+    <origin rpy="0 0 0" xyz="0 -0.20955 -0.0254"/>
+    </joint>
+    
+
+    
+    <link name="rrwCaster">
+    <visual>
+            <geometry>
+                <box size="0.0254 -0.0254 0.0508"/>
+            </geometry>
+                  <material name="silver">
+                    <color rgba="0.75 0.75 0.75 1"/>
+                   </material>
+        </visual>
+        
+            <collision>
+     <geometry>
+                <box size="0.0254 -0.0254 0.0508"/>
+     </geometry>
+    </collision>
+        
+	<xacro:box_inertial mass="7.0" x="0.0254" y="-0.0254" z="0.0508"/>
+    </link>
+    
+    
+    
+        
+    <joint name="rrwCaster to rrwJointCaster" type="continuous">
+    <axis xyz="0 0 1"/>
+    <parent link="rrwCaster"/>
+    <child link="rrwJointCaster"/>
+    <origin rpy="0 0 0" xyz="0 0.0 -0.0254"/>
+    </joint>
+
+ <link name="rrwJointCaster">
+    <visual>
+      <geometry>
+        <cylinder length="0.03" radius="0.015"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0 0 0 1"/>
+      </material>
+    </visual>    
+    
+        <collision>
+     <geometry>
+        <cylinder length="0.03" radius="0.015"/>
+     </geometry>
+    </collision>
+	
+
+	<xacro:cylinder_inertial radius="0.015" length="0.03" mass="8.0"/>
+
+  
+    
+  </link>
+
+    <joint name="rrwJointCaster to rrw" type="continuous">
+    <axis xyz="0 0 1"/>
+    <parent link="rrwJointCaster"/>
+    <child link="rrw"/>
+    <origin rpy="1.5708 0 0" xyz="0 0.0 -0.0254"/>
+    </joint>
+
+
+
+
+      <link name="rrw">
+
+    <visual>
+      <geometry>
+        <cylinder length="0.05" radius="0.035"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0 0 0 1"/>
+      </material>
+    </visual>    
+    
+        <collision>
+     <geometry>
+        <cylinder length="0.05" radius="0.035"/>
+     </geometry>
+    </collision>
+	
+	   	<xacro:cylinder_inertial radius="0.035" length="0.05" mass="16.0"/>  
+    
+  </link>
+    
+
+<gazebo>
+    <plugin name="differential_drive_controller"
+            filename="libgazebo_ros_diff_drive.so">
+      <leftJoint>left_wheel_joint</leftJoint>
+      <rightJoint>right_wheel_joint</rightJoint>
+      <robotBaseFrame>base_link</robotBaseFrame>
+      <wheelSeparation>0.5207</wheelSeparation>
+      <wheelDiameter>0.254</wheelDiameter>
+      <publishWheelJointState>true</publishWheelJointState>
+      <legacyMode>false</legacyMode>
+      <wheelTorque>180</wheelTorque>
+
+    </plugin>
+  </gazebo>
+
+</robot>
